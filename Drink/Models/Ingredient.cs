@@ -8,8 +8,14 @@ namespace Drink.Models
 {
     public class Ingredient
     {
-        [Key]
+        public int ID { get; set; }
         public int IdIngredient { get; set; }
 
+        public Ingredient(int ID)
+        {
+            this.IdIngredient = ID;
+        }
     }
+
+
 }

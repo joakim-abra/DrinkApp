@@ -19,6 +19,7 @@ namespace Drink.Models
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Favorite> Favorites { get; set; }
+        public virtual DbSet<Ingredient> Ingredients { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
