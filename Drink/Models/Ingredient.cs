@@ -9,12 +9,10 @@ namespace Drink.Models
     public class Ingredient
     {
         public int ID { get; set; }
-        public int IdIngredient { get; set; }
+        public int CocktailDBId { get; set; }
+        
+        public string Name { get; set; }
 
-        public Ingredient(int ID)
-        {
-            this.IdIngredient = ID;
-        }
     }
 
 

@@ -1,4 +1,5 @@
-﻿using Drink.Models;
+﻿using Drink.Database;
+using Drink.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
