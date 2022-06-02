@@ -10,7 +10,8 @@ namespace Drink.Models
         public int Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public List<Favorite> Favorites { get; set; }
-        public List<Ingredient> Ingredients { get; set; }
+
+        public List<UserFavorite> Favorites { get; set; }
+        public List<UserIngredient> Ingredients { get; set; }
     }
 }

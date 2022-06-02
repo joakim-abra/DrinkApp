@@ -1,4 +1,5 @@
-﻿using Drink.Models;
+﻿using Drink.Database;
+using Drink.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -29,18 +30,18 @@ namespace Drink.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<IngredientController>/5
-        [HttpGet("GetAllIngredientsByUserID")]
-        public async Task<ActionResult<IEnumerable<Ingredient>>>GetAllIngredientsByUserID(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
+        //// GET api/<IngredientController>/5
+        //[HttpGet("GetAllIngredientsByUserID")]
+        //public async Task<ActionResult<IEnumerable<UserIngredient>>>GetAllIngredientsByUserID(int id)
+        //{
+        //    var user = await _context.UserIngredients.FindAsync(id);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return user.Ingredients;
-        }
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return user;
+        //}
 
         // POST api/<IngredientController>
         //[HttpPost("AddIngredient")]
@@ -52,17 +53,15 @@ namespace Drink.Controllers
         //}
 
         // POST api/<IngredientController>
-        [HttpPost("AddIngredient")]
-        public async Task<ActionResult<IEnumerable<User>>> AddIngredient(int userId, int ingredient)
+        [HttpPut("AddIngredient")]
+        public async Task<ActionResult<IEnumerable<User>>> AddIngredient(User user)
         {
-            var user = await _context.Users.FindAsync(userId);
-            var ingredientList = user.Ingredients;
-
-            if (user == null)
+       
+            if (await _context.Users.FindAsync(user.Id) == null)
             {
                 return NotFound();
             }
-            ingredientList.Add(new Ingredient(ingredient));
+            
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetAllIngredientsByUserID", new { id = user.Id }, user);
         }

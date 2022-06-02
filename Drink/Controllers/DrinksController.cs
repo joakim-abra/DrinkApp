@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+using JsonSerializer = System.Text.Json.Serialization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +15,7 @@ namespace Drink.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class DrinksController : ControllerBase
     {
         public static HttpClient client = new HttpClient();
@@ -40,13 +43,15 @@ namespace Drink.Controllers
         }
 
         [HttpGet("GetDrinksByName")]
-        public async Task<ActionResult<string>> GetDrinksByName(string name)
+        public async Task<ActionResult<Result>> GetDrinksByName(string name)
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/search.php?s={name}";
             var response = await client.GetAsync(uriID);
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
-            return responseContent;
+            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+            string json = JsonConvert.SerializeObject(result);
+            return result;
         }
 
 
