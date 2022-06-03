@@ -1,9 +1,12 @@
 ﻿using Drink.Database;
 using Drink.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 
@@ -13,8 +16,10 @@ namespace Drink.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class IngredientController : ControllerBase
     {
+        public static HttpClient client = new HttpClient();
 
         private readonly CocktailDatabaseContext _context;
         public IngredientController(CocktailDatabaseContext context)
@@ -24,24 +29,25 @@ namespace Drink.Controllers
 
 
         // GET: api/<IngredientController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("GetAllIngredients")]
+        public async Task<ActionResult<IEnumerable<Ingredient>>> GetAllIngredients()
         {
-            return new string[] { "value1", "value2" };
+            
+            return await _context.Ingredients.ToListAsync();
         }
 
-        //// GET api/<IngredientController>/5
-        //[HttpGet("GetAllIngredientsByUserID")]
-        //public async Task<ActionResult<IEnumerable<UserIngredient>>>GetAllIngredientsByUserID(int id)
-        //{
-        //    var user = await _context.UserIngredients.FindAsync(id);
+        //GET api/<IngredientController>/5
+        [HttpGet("GetIngredientsByID")]
+        public async Task<ActionResult<Ingredient>> GetIngredientsByID(int id)
+        {
+            var ingredient = await _context.Ingredients.FindAsync(id);
 
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return user;
-        //}
+            if (ingredient == null)
+            {
+                return NotFound();
+            }
+            return ingredient;
+        }
 
         // POST api/<IngredientController>
         //[HttpPost("AddIngredient")]
@@ -53,17 +59,27 @@ namespace Drink.Controllers
         //}
 
         // POST api/<IngredientController>
-        [HttpPut("AddIngredient")]
-        public async Task<ActionResult<IEnumerable<User>>> AddIngredient(User user)
+        [HttpGet("AddAllIngredients")]
+        public async Task<ActionResult<Result>> AddIngredient()
         {
-       
-            if (await _context.Users.FindAsync(user.Id) == null)
+            for(int id=1;id<616;id++)
             {
-                return NotFound();
+
+                string uriID = $"http://www.thecocktaildb.com/api/json/v1/1/lookup.php?iid={id}";
+                var response = await client.GetAsync(uriID);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+                if(result.ingredients!=null)
+                { 
+                    foreach(Ingredient ingredient in result.ingredients)
+                    {
+                    _context.Ingredients.Add(ingredient);
+                    }
+                    await _context.SaveChangesAsync();
+                }
             }
-            
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetAllIngredientsByUserID", new { id = user.Id }, user);
+            return Ok();
         }
 
 

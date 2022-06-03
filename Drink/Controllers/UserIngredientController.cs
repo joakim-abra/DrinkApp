@@ -10,6 +10,7 @@ namespace Drink.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class UserIngredientController : ControllerBase
     {
         // GET: api/<UserIngredientController>

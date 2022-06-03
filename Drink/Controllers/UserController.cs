@@ -13,6 +13,7 @@ namespace Drink.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class UserController : ControllerBase
     {
         private readonly CocktailDatabaseContext _context;
@@ -51,10 +52,34 @@ namespace Drink.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("EditUser")]
+        public async Task<ActionResult<User>> EditUser(User user)
         {
+            var current = await _context.Users.FindAsync(user.Id);
+            if (current == null)
+            {
+                return NotFound();
+            }
+            current.Username = user.Username;
+            current.Password = user.Password;
+            await _context.SaveChangesAsync();
+            return user;
         }
+
+
+        //[Route("api/{userid}/")]
+        //[HttpPatch("{AddFavorite}")]
+        //public async Task<ActionResult<User>> Patch(User user)
+        //{
+        //    var current = await _context.Users.FindAsync(user.Id);
+        //    if (current==null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return user;
+        //}
+
+
 
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
@@ -71,4 +96,5 @@ namespace Drink.Controllers
 
         }
     }
+    
 }

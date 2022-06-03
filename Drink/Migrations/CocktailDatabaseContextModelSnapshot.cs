@@ -25,8 +25,8 @@ namespace Drink.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CocktailDBFavoriteID")
-                        .HasColumnType("int");
+                    b.Property<string>("CocktailDbID")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

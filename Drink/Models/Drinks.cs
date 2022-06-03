@@ -9,7 +9,7 @@ namespace Drink.Models
     {
         public string idDrink { get; set; }
         public string strDrink { get; set; }
-        public object strVideo { get; set; }
+        public string strVideo { get; set; }
         public string strGlass { get; set; }
         public string strInstructions { get; set; }
         public string strDrinkThumb { get; set; }
@@ -31,18 +31,18 @@ namespace Drink.Models
         public string strMeasure1 { get; set; }
         public string strMeasure2 { get; set; }
         public string strMeasure3 { get; set; }
-        public object strMeasure4 { get; set; }
-        public object strMeasure5 { get; set; }
-        public object strMeasure6 { get; set; }
-        public object strMeasure7 { get; set; }
-        public object strMeasure8 { get; set; }
-        public object strMeasure9 { get; set; }
-        public object strMeasure10 { get; set; }
-        public object strMeasure11 { get; set; }
-        public object strMeasure12 { get; set; }
-        public object strMeasure13 { get; set; }
-        public object strMeasure14 { get; set; }
-        public object strMeasure15 { get; set; }
+        public string strMeasure4 { get; set; }
+        public string strMeasure5 { get; set; }
+        public string strMeasure6 { get; set; }
+        public string strMeasure7 { get; set; }
+        public string strMeasure8 { get; set; }
+        public string strMeasure9 { get; set; }
+        public string strMeasure10 { get; set; }
+        public string strMeasure11 { get; set; }
+        public string strMeasure12 { get; set; }
+        public string strMeasure13 { get; set; }
+        public string strMeasure14 { get; set; }
+        public string strMeasure15 { get; set; }
 
     }
 }

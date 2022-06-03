@@ -8,5 +8,6 @@ namespace Drink.Models
     public class Result
     {
         public List<Drinks> Drinks { get; set; }
+        public Ingredient[]? ingredients { get; set; }
     }
 }
