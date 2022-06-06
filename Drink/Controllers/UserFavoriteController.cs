@@ -33,8 +33,11 @@ namespace Drink.Controllers
 
         // GET api/<UserFavoriteController>/5
         [HttpGet("Favorites")]
-        public async Task<ActionResult<UserFavoriteDTO>> GETFavorites(int id)
+        public async Task<ActionResult<UserFavoriteDTO>> GetFavorites(int id)
         {
+            try
+            {
+
             var user = await _context.Users.FindAsync(id);
            
             List<FavoriteDTO> resp = new();
@@ -48,6 +51,11 @@ namespace Drink.Controllers
                 }
             }
             return new UserFavoriteDTO(resp);
+            }
+            catch(Exception)
+            {
+                return NoContent();
+            }
         }
 
         // POST api/<UserFavoriteController>

@@ -19,26 +19,25 @@ namespace Drink.Controllers
     {
         public static HttpClient client = new HttpClient();
         
-        // GET: api/<DrinksController>
-        [HttpGet("GetDrinksByIngredient")]
-        public async Task<ActionResult<string>> GetDrinksByIngredient(string ingredient)
-        {
-            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={ingredient}";
-            var response = await client.GetAsync(uriID);
-            response.EnsureSuccessStatusCode();
-            string responseContent = await response.Content.ReadAsStringAsync();
-            return responseContent;
-        }
 
         // GET api/<DrinksController>/5
         [HttpGet("GetDrinksByID")]
-        public async Task<ActionResult<string>> GetDrinksByID(int id)
+        public async Task<ActionResult<Drinks>> GetDrinksByID(int id)
         {
-            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?iid={id}";
+            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id}";
             var response = await client.GetAsync(uriID);
+            try
+            {
+
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
-            return responseContent;
+            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+            return result.Drinks[0];
+            }
+            catch(Exception)
+            {
+                return NoContent();
+            }
         }
 
         [HttpGet("GetDrinksByName")]
@@ -46,10 +45,18 @@ namespace Drink.Controllers
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/search.php?s={name}";
             var response = await client.GetAsync(uriID);
+            try
+            {
+
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
             Result result = JsonConvert.DeserializeObject<Result>(responseContent);
             return result;
+            }
+            catch(Exception)
+            {
+                return NoContent();
+            }
         }
 
         [HttpGet("GetDrinksByIngredientName")]
@@ -57,10 +64,36 @@ namespace Drink.Controllers
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={name}";
             var response = await client.GetAsync(uriID);
+            try
+            {
+
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
             Result result = JsonConvert.DeserializeObject<Result>(responseContent);
             return result;
+            }
+            catch(Exception)
+            {
+                return NoContent();
+            }
+        }
+
+        [HttpGet("RandomDrink")]
+        public async Task<ActionResult<Drinks>> GetRandom()
+        {
+            string uriID = $"http://www.thecocktaildb.com/api/json/v1/1/random.php";
+            var response = await client.GetAsync(uriID);
+            try
+            {
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Result randomDrink = JsonConvert.DeserializeObject<Result>(responseContent);
+                return randomDrink.Drinks[0];
+            }
+            catch(Exception)
+            {
+                return NoContent();
+            }
         }
 
 
