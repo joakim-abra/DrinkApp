@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Drink.Database;
+using Drink.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +16,36 @@ namespace Drink.Controllers
     [Produces("application/json")]
     public class UserIngredientController : ControllerBase
     {
-        // GET: api/<UserIngredientController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly CocktailDatabaseContext _context;
+        public UserIngredientController(CocktailDatabaseContext context)
         {
-            return new string[] { "value1", "value2" };
+            _context = context;
+        }
+        // GET: api/<UserIngredientController>
+        [HttpGet("GetMyIngredients")]
+        public async Task<ActionResult<UserIngredientDTO>> GetMyIngredients(int userID)
+        {
+            var user = await _context.Users.FindAsync(userID);
+            if(user!=null)
+            {
+
+            List<IngredientDTO> resp = new();
+            var ingredientList = await _context.UserIngredients.Where(x => x.UserID == userID).ToListAsync();
+
+            foreach (UserIngredient item in ingredientList)
+            {
+                    var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
+                    resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
+            }
+            return new UserIngredientDTO(resp);
+            }
+            
+            return NotFound();
+
         }
 
-        // GET api/<UserIngredientController>/5
-        [HttpGet("{id}")]
+            // GET api/<UserIngredientController>/5
+            [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
@@ -29,8 +53,30 @@ namespace Drink.Controllers
 
         // POST api/<UserIngredientController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<UserIngredientDTO>> AddUserIngredient(int userID, int ingredientID)
         {
+            var user = await _context.Users.FindAsync(userID);
+            var ingredient = await _context.Ingredients.FindAsync(ingredientID);
+            if (user == null || ingredient == null)
+            {
+                return NotFound();
+            }
+            UserIngredient added = new(userID,user,ingredientID,ingredient);
+            await _context.UserIngredients.AddAsync(added);
+            user.Ingredients.Add(added);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            var myIngredients =  _context.UserIngredients.Where(x => x.UserID == userID).ToList();
+            List < IngredientDTO > resp= new();
+           
+            foreach(UserIngredient item in myIngredients)
+            {
+                var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
+                resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
+                
+            }
+            return new UserIngredientDTO(resp);
         }
 
         // PUT api/<UserIngredientController>/5
@@ -41,8 +87,25 @@ namespace Drink.Controllers
 
         // DELETE api/<UserIngredientController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<UserIngredientDTO>> Delete(int userID, int cocktaildbID)
         {
+            var ingredient = await _context.UserIngredients.SingleAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
+            if(ingredient !=null)
+            {
+                _context.UserIngredients.Remove(ingredient);
+                await _context.SaveChangesAsync();
+            }
+            var myIngredients = _context.UserIngredients.Where(x => x.UserID == userID).ToList();
+            List<IngredientDTO> resp = new();
+
+            foreach (UserIngredient item in myIngredients)
+            {
+                var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
+                resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
+
+            }
+            return new UserIngredientDTO(resp);
+
         }
     }
 }

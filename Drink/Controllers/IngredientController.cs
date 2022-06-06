@@ -32,9 +32,20 @@ namespace Drink.Controllers
         [HttpGet("GetAllIngredients")]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetAllIngredients()
         {
-            
+
             return await _context.Ingredients.ToListAsync();
         }
+
+
+        [HttpGet("Ingredients/Search")]
+        public async Task<ActionResult<IEnumerable<Ingredient>>> SearchIngredientByName(string name)
+            {
+            var results =  await _context.Ingredients.Where(x => x.Name.Contains(name)).ToListAsync();
+            return results;
+            }
+
+
+
 
         //GET api/<IngredientController>/5
         [HttpGet("GetIngredientsByID")]
@@ -60,7 +71,7 @@ namespace Drink.Controllers
 
         // POST api/<IngredientController>
         [HttpGet("AddAllIngredients")]
-        public async Task<ActionResult<Result>> AddIngredient()
+        public async Task<ActionResult<Result>> AddAllIngredientsToDB()
         {
             for(int id=1;id<616;id++)
             {

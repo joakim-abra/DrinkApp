@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Drink.Models
 {
-    public partial class User
+    public class User
     {
         public int Id { get; set; }
         public string Username { get; set; }
@@ -13,5 +13,19 @@ namespace Drink.Models
 
         public List<UserFavorite> Favorites { get; set; }
         public List<UserIngredient> Ingredients { get; set; }
+        
+        public User()
+        {
+
+        }
+        public User(string userName, string passWord)
+        {
+            this.Username = userName;
+            this.Password = passWord;
+            this.Favorites = null;
+            this.Ingredients = null;
+        }
     }
+    
+
 }

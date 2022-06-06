@@ -52,6 +52,18 @@ namespace Drink.Controllers
             return result;
         }
 
+        [HttpGet("GetDrinksByIngredientName")]
+        public async Task<ActionResult<Result>> GetDrinksByIngredientName(string name)
+        {
+            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={name}";
+            var response = await client.GetAsync(uriID);
+            response.EnsureSuccessStatusCode();
+            string responseContent = await response.Content.ReadAsStringAsync();
+            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+            return result;
+        }
+
+
 
         // POST api/<DrinksController>
         [HttpPost]

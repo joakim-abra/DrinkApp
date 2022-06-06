@@ -25,13 +25,6 @@ namespace Drink.Models
             this.User = user;
             this.Favorite = favorite;
         }
-        public UserFavorite(int id, int userID,User user,int fID,Favorite favorite)
-        {
-            this.ID = id;
-            this.UserID = userID;
-            this.User = user;
-            this.FavoriteID = fID;
-            this.Favorite = favorite;
-        }
+
     }
 }

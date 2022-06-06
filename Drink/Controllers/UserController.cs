@@ -41,27 +41,33 @@ namespace Drink.Controllers
             }
             return user;
         }
+  
 
         // POST api/<UserController>
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<IEnumerable<User>>> CreateUser(User user)
+        public async Task<ActionResult<IEnumerable<EditUserDTO>>> CreateUser(CreateUserDTO user)
         {
-            _context.Users.Add(user);
+            _context.Users.Add(new User(user.Username, user.Password));
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetUserById", new { id = user.Id }, user);
+            var newUser = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(x => x.Id > 0);
+            //newUser.Username = user.Username;
+            //newUser.Password = user.Password;
+            //_context.Users.Update(newUser);
+            return CreatedAtAction("GetUserById", new { id = newUser.Id }, user);
         }
 
         // PUT api/<UserController>/5
         [HttpPut("EditUser")]
-        public async Task<ActionResult<User>> EditUser(User user)
+        public async Task<ActionResult<EditUserDTO>> EditUser(EditUserDTO user)
         {
-            var current = await _context.Users.FindAsync(user.Id);
+            var current = await _context.Users.FindAsync(user.ID);
             if (current == null)
             {
                 return NotFound();
             }
             current.Username = user.Username;
             current.Password = user.Password;
+            _context.Users.Update(current);
             await _context.SaveChangesAsync();
             return user;
         }

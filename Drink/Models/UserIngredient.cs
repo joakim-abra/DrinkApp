@@ -16,5 +16,24 @@ namespace Drink.Models
         public int IngredientID { get; set; }
         
         public Ingredient Ingredient { get; set; }
+        public UserIngredient()
+        {
+
+        }
+
+        public UserIngredient(User user, Ingredient ingredient)
+        {
+            this.User = user;
+            this.Ingredient = ingredient;
+        }
+
+        public UserIngredient(int userID, User user, int ingredientID, Ingredient ingredient)
+        {
+            this.UserID = userID;
+            this.User = user;
+            this.IngredientID = ingredientID;
+            this.Ingredient = ingredient;
+        }
     }
+
 }

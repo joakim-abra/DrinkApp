@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drink.Migrations
 {
     [DbContext(typeof(CocktailDatabaseContext))]
-    [Migration("20220603131745_initial-migration")]
-    partial class initialmigration
+    [Migration("20220605133723_initial_migration")]
+    partial class initial_migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

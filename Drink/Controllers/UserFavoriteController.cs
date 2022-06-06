@@ -32,15 +32,27 @@ namespace Drink.Controllers
         }
 
         // GET api/<UserFavoriteController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("Favorites")]
+        public async Task<ActionResult<UserFavoriteDTO>> GETFavorites(int id)
         {
-            return "value";
+            var user = await _context.Users.FindAsync(id);
+           
+            List<FavoriteDTO> resp = new();
+            var favoritesList = await _context.UserFavorites.Where(x => x.UserID == id).ToListAsync();
+            foreach (UserFavorite item in favoritesList)
+            {
+                var fav = await _context.Favorites.FindAsync(item.FavoriteID);
+                if (item != null)
+                {
+                    resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
+                }
+            }
+            return new UserFavoriteDTO(resp);
         }
 
         // POST api/<UserFavoriteController>
         [HttpPost("AddFavorite")]
-        public async Task<ActionResult<UserFavorite>> AddFavorite(int userID, int drinkID)
+        public async Task<ActionResult<UserFavoriteDTO>> AddFavorite(int userID, int drinkID)
         {
             var user = await _context.Users.FindAsync(userID);
             if (user == null)
@@ -53,51 +65,52 @@ namespace Drink.Controllers
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
             Result results = JsonConvert.DeserializeObject<Result>(responseContent);
-
             Favorite favorite = new(results.Drinks[0].strDrink, results.Drinks[0].idDrink);
-                await _context.Favorites.AddAsync(favorite);
-                await _context.SaveChangesAsync();
-
-            var favorite2 = await _context.UserFavorites.OrderBy(x=>x.ID).LastOrDefaultAsync(x => x.ID > 0);
-            int id;
-            if (favorite2==null)
-            {
-                id = 1;
-            }
-            else
-            {
-                id = favorite2.ID + 1;
-            }
-            UserFavorite userFavorite = new(id, userID, user, favorite.ID, favorite);
+            UserFavorite userFavorite = new(user, favorite);
             using (var transaction = await _context.Database.BeginTransactionAsync())
             { 
-            await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.UserFavorites ON");
             await _context.UserFavorites.AddAsync(userFavorite);
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
             }
-            return userFavorite;
+            //string output = JsonConvert.SerializeObject(userFavorite, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-        }
+            List<FavoriteDTO> resp = new();
+            user = await _context.Users.FindAsync(userID);
+            var favoritesList = await _context.UserFavorites.Where(x =>x.UserID==userID).ToListAsync();
 
 
-
-
-        // PUT api/<UserFavoriteController>/5
-        [HttpPut("AddFavoriteToUser")]
-        public async Task<ActionResult<User>> AddFavoriteToUser(int userID, Favorite favorite)
-        {
-            User current = await _context.Users.FindAsync(userID);
-            if (current == null)
+            foreach(UserFavorite item in favoritesList)
             {
-                return NotFound();
+                var fav = await _context.Favorites.FindAsync(item.FavoriteID);
+                if(item!=null)
+                {
+                 resp.Add(new FavoriteDTO(fav.Name,fav.CocktailDbID));
+                }
             }
-            UserFavorite userFavorite = new(current,favorite);
-            _context.UserFavorites.Add(userFavorite);
-            _context.Users.Update(current);
-            await _context.SaveChangesAsync();
-            return current;
+
+            return new UserFavoriteDTO(resp);
+
         }
+
+
+
+
+        //// PUT api/<UserFavoriteController>/5
+        //[HttpPut("AddFavoriteToUser")]
+        //public async Task<ActionResult<User>> AddFavoriteToUser(int userID, Favorite favorite)
+        //{
+        //    User current = await _context.Users.FindAsync(userID);
+        //    if (current == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    UserFavorite userFavorite = new(current,favorite);
+        //    _context.UserFavorites.Add(userFavorite);
+        //    _context.Users.Update(current);
+        //    await _context.SaveChangesAsync();
+        //    return current;
+        //}
 
         // DELETE api/<UserFavoriteController>/5
         [HttpDelete("{id}")]
