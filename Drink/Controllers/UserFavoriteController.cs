@@ -24,12 +24,6 @@ namespace Drink.Controllers
         {
             _context = context;
         }
-        // GET: api/<UserFavoriteController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         // GET api/<UserFavoriteController>/5
         [HttpGet("Favorites")]
@@ -126,11 +120,15 @@ namespace Drink.Controllers
 
         // DELETE api/<UserFavoriteController>/5
         [HttpDelete("Delete")]
-        public async Task<ActionResult<UserFavorite>> DeleteFavorite(int userID, FavoriteDTO favorite)
+        public async Task<ActionResult<UserFavorite>> DeleteFavorite(int userID, int CocktailDbID)
         {
             try
             {
-            var userFavorite = await _context.UserFavorites.SingleOrDefaultAsync(x => x.UserID == userID && x.Favorite.CocktailDbID == favorite.CocktailDbID);
+            var userFavorite = await _context.UserFavorites.SingleOrDefaultAsync(x => x.UserID == userID && x.Favorite.CocktailDbID == Convert.ToString(CocktailDbID));
+            if(userFavorite == null)
+                {
+                    return NotFound();
+                }
             _context.UserFavorites.Remove(userFavorite);
             await _context.SaveChangesAsync();
             return NoContent();
