@@ -62,31 +62,35 @@ namespace Drink.Controllers
         [HttpPost("AddFavorite")]
         public async Task<ActionResult<UserFavoriteDTO>> AddFavorite(int userID, int drinkID)
         {
+            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={drinkID}";
+            try
+            {
+
             var user = await _context.Users.FindAsync(userID);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
 
-            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={drinkID}";
             var response = await client.GetAsync(uriID);
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();
-            Result results = JsonConvert.DeserializeObject<Result>(responseContent);
-            Favorite favorite = new(results.Drinks[0].strDrink, results.Drinks[0].idDrink);
-            UserFavorite userFavorite = new(user, favorite);
-            using (var transaction = await _context.Database.BeginTransactionAsync())
-            { 
-            await _context.UserFavorites.AddAsync(userFavorite);
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            }
-            //string output = JsonConvert.SerializeObject(userFavorite, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                
+                Result results = JsonConvert.DeserializeObject<Result>(responseContent);
+                if(results.Drinks==null)
+                {
+                    return NotFound("Invalid drink id");
+                }
 
+                    Favorite favorite = new(results.Drinks[0].strDrink, results.Drinks[0].idDrink);
+                    UserFavorite userFavorite = new(user, favorite);
+                    await _context.UserFavorites.AddAsync(userFavorite);
+                    await _context.SaveChangesAsync();
+       
+            //Return user's favorites
             List<FavoriteDTO> resp = new();
             user = await _context.Users.FindAsync(userID);
             var favoritesList = await _context.UserFavorites.Where(x =>x.UserID==userID).ToListAsync();
-
 
             foreach(UserFavorite item in favoritesList)
             {
@@ -96,13 +100,13 @@ namespace Drink.Controllers
                  resp.Add(new FavoriteDTO(fav.Name,fav.CocktailDbID));
                 }
             }
-
             return new UserFavoriteDTO(resp);
-
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
-
-
-
 
         //// PUT api/<UserFavoriteController>/5
         //[HttpPut("AddFavoriteToUser")]
@@ -121,9 +125,20 @@ namespace Drink.Controllers
         //}
 
         // DELETE api/<UserFavoriteController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("Delete")]
+        public async Task<ActionResult<UserFavorite>> DeleteFavorite(int userID, FavoriteDTO favorite)
         {
+            try
+            {
+            var userFavorite = await _context.UserFavorites.SingleOrDefaultAsync(x => x.UserID == userID && x.Favorite.CocktailDbID == favorite.CocktailDbID);
+            _context.UserFavorites.Remove(userFavorite);
+            await _context.SaveChangesAsync();
+            return NoContent();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
     }
 }

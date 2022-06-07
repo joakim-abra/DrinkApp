@@ -47,19 +47,31 @@ namespace Drink.Controllers
         [HttpPost("CreateUser")]
         public async Task<ActionResult<IEnumerable<EditUserDTO>>> CreateUser(CreateUserDTO user)
         {
-            _context.Users.Add(new User(user.Username, user.Password));
-            await _context.SaveChangesAsync();
-            var newUser = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(x => x.Id > 0);
-            //newUser.Username = user.Username;
-            //newUser.Password = user.Password;
-            //_context.Users.Update(newUser);
-            return CreatedAtAction("GetUserById", new { id = newUser.Id }, user);
+            try
+            {
+                if (await _context.Users.AnyAsync(x => x.Username == user.Username))
+                {
+                    return BadRequest("Username must be unique");
+                }
+
+                _context.Users.Add(new User(user.Username, user.Password));
+                await _context.SaveChangesAsync();
+                var newUser = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(x => x.Id > 0);
+                return CreatedAtAction("GetUserById", new { id = newUser.Id }, user);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         // PUT api/<UserController>/5
         [HttpPut("EditUser")]
         public async Task<ActionResult<EditUserDTO>> EditUser(EditUserDTO user)
         {
+            try
+            {
+
             var current = await _context.Users.FindAsync(user.ID);
             if (current == null)
             {
@@ -69,21 +81,13 @@ namespace Drink.Controllers
             current.Password = user.Password;
             _context.Users.Update(current);
             await _context.SaveChangesAsync();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
             return user;
         }
-
-
-        //[Route("api/{userid}/")]
-        //[HttpPatch("{AddFavorite}")]
-        //public async Task<ActionResult<User>> Patch(User user)
-        //{
-        //    var current = await _context.Users.FindAsync(user.Id);
-        //    if (current==null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return user;
-        //}
 
 
 
@@ -91,6 +95,9 @@ namespace Drink.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(int id)
         {
+            try
+            {
+
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
@@ -98,6 +105,11 @@ namespace Drink.Controllers
             }
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
             return NoContent();
 
         }

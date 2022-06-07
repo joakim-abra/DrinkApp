@@ -24,7 +24,7 @@ namespace Drink.Controllers
 
         // POST api/<LogInController>
         [HttpPost]
-        public async Task<ActionResult<EditUserDTO>> LogIn([FromBody] LogIn login)
+        public async Task<ActionResult<EditUserDTO>> LogIn(LogIn login)
         {
             var found = await _context.Users.AnyAsync(x => x.Username == login.Username && x.Password == login.Password);
             if(found)
