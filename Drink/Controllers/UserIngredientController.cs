@@ -21,7 +21,6 @@ namespace Drink.Controllers
         {
             _context = context;
         }
-
         // GET: api/<UserIngredientController>
         [HttpGet("GetMyIngredients")]
         public async Task<ActionResult<UserIngredientDTO>> GetMyIngredients(int userID)
@@ -45,8 +44,15 @@ namespace Drink.Controllers
 
         }
 
+            // GET api/<UserIngredientController>/5
+            [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return "value";
+        }
+
         // POST api/<UserIngredientController>
-        [HttpPost("AddUserIngredient")]
+        [HttpPost]
         public async Task<ActionResult<UserIngredientDTO>> AddUserIngredient(int userID, int ingredientID)
         {
             var user = await _context.Users.FindAsync(userID);
@@ -78,14 +84,17 @@ namespace Drink.Controllers
 
         }
 
+        // PUT api/<UserIngredientController>/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] string value)
+        {
+        }
+
         // DELETE api/<UserIngredientController>/5
-        [HttpDelete("DeleteIngredient")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<UserIngredientDTO>> Delete(int userID, int cocktaildbID)
         {
-            try
-            {
-
-            var ingredient = await _context.UserIngredients.SingleOrDefaultAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
+            var ingredient = await _context.UserIngredients.SingleAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
             if(ingredient !=null)
             {
                 _context.UserIngredients.Remove(ingredient);
@@ -107,10 +116,7 @@ namespace Drink.Controllers
                 
 
             }
-            catch(Exception)
-            {
-                throw;
-            }
+            return new UserIngredientDTO(resp);
 
         }
     }
