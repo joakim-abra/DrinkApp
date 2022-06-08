@@ -45,18 +45,26 @@ namespace Drink.Controllers
 
         // POST api/<UserController>
         [HttpPost("CreateUser")]
-        public async Task<ActionResult> CreateUser(CreateUserDTO user)
+        public async Task<ActionResult<EditUserDTO>> CreateUser(CreateUserDTO user)
         {
+            if(user.Username == null || user.Username.Length<2)
+            {
+                return Unauthorized();
+            }
+            if (user.Password == null || user.Password.Length < 3)
+            {
+                return Unauthorized();
+            }
             try
             {
                 if (await _context.Users.AnyAsync(x => x.Username == user.Username))
                 {
-                    return BadRequest("Username must be unique");
+                    return Unauthorized("Username must be unique");
                 }
                 _context.Users.Add(new User(user.Username, user.Password));
                 await _context.SaveChangesAsync();
                 var newUser = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(x => x.Id > 0);
-                return CreatedAtAction("GetUserById", new { id = newUser.Id }, user);
+                return CreatedAtAction("GetUserById", new { id = newUser.Id }, new EditUserDTO(newUser.Id,newUser.Username,newUser.Password));
             }
             catch(Exception)
             {

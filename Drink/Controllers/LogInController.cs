@@ -24,7 +24,7 @@ namespace Drink.Controllers
 
         // POST api/<LogInController>
         [HttpPost]
-        public async Task<ActionResult<User>> LogIn(LogIn login)
+        public async Task<ActionResult<EditUserDTO>> LogIn(LogIn login)
         {
             try
                 {
@@ -32,7 +32,7 @@ namespace Drink.Controllers
                 if(found)
                 {
                     var user = await _context.Users.SingleOrDefaultAsync(x =>x.Username == login.Username && x.Password == login.Password);
-                    return user;
+                    return new EditUserDTO(user.Id,user.Username,user.Password);
                 }
                 return Unauthorized();
                 }
