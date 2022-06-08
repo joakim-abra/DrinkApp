@@ -33,22 +33,26 @@ namespace Drink.Controllers
             {
 
             var user = await _context.Users.FindAsync(id);
-           
-            List<FavoriteDTO> resp = new();
-            var favoritesList = await _context.UserFavorites.Where(x => x.UserID == id).ToListAsync();
-            foreach (UserFavorite item in favoritesList)
-            {
-                var fav = await _context.Favorites.FindAsync(item.FavoriteID);
-                if (item != null)
+                if(user ==null)
                 {
-                    resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
+                    return NotFound();
                 }
-            }
-            return new UserFavoriteDTO(resp);
+
+                List<FavoriteDTO> resp = new();
+                var favoritesList = await _context.UserFavorites.Where(x => x.UserID == id).ToListAsync();
+                foreach (UserFavorite item in favoritesList)
+                {
+                    var fav = await _context.Favorites.FindAsync(item.FavoriteID);
+                    if (item != null)
+                    {
+                        resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
+                    }
+                }
+                return new UserFavoriteDTO(resp);
             }
             catch(Exception)
             {
-                return NoContent();
+                throw;
             }
         }
 
@@ -80,21 +84,25 @@ namespace Drink.Controllers
                     UserFavorite userFavorite = new(user, favorite);
                     await _context.UserFavorites.AddAsync(userFavorite);
                     await _context.SaveChangesAsync();
-       
-            //Return user's favorites
-            List<FavoriteDTO> resp = new();
-            user = await _context.Users.FindAsync(userID);
-            var favoritesList = await _context.UserFavorites.Where(x =>x.UserID==userID).ToListAsync();
 
-            foreach(UserFavorite item in favoritesList)
-            {
-                var fav = await _context.Favorites.FindAsync(item.FavoriteID);
-                if(item!=null)
-                {
-                 resp.Add(new FavoriteDTO(fav.Name,fav.CocktailDbID));
-                }
-            }
-            return new UserFavoriteDTO(resp);
+                ////Return user's favorites
+                //List<FavoriteDTO> resp = new();
+                //user = await _context.Users.FindAsync(userID);
+                //var favoritesList = await _context.UserFavorites.Where(x => x.UserID == userID).ToListAsync();
+
+                //foreach (UserFavorite item in favoritesList)
+                //{
+                //    var fav = await _context.Favorites.FindAsync(item.FavoriteID);
+                //    if (item != null)
+                //    {
+                //        resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
+                //    }
+                //}
+                //return new UserFavoriteDTO(resp);
+
+                //Change to Created Response without returning an object how??
+                return Ok();
+
             }
             catch(Exception)
             {

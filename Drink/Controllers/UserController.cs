@@ -45,7 +45,7 @@ namespace Drink.Controllers
 
         // POST api/<UserController>
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<IEnumerable<EditUserDTO>>> CreateUser(CreateUserDTO user)
+        public async Task<ActionResult> CreateUser(CreateUserDTO user)
         {
             try
             {
@@ -53,7 +53,6 @@ namespace Drink.Controllers
                 {
                     return BadRequest("Username must be unique");
                 }
-
                 _context.Users.Add(new User(user.Username, user.Password));
                 await _context.SaveChangesAsync();
                 var newUser = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(x => x.Id > 0);
@@ -66,7 +65,7 @@ namespace Drink.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("EditUser")]
+        [HttpPatch("EditUser")]
         public async Task<ActionResult<EditUserDTO>> EditUser(EditUserDTO user)
         {
             try
@@ -80,6 +79,9 @@ namespace Drink.Controllers
             current.Username = user.Username;
             current.Password = user.Password;
             _context.Users.Update(current);
+
+                //_context.Entry(current).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
             }
             catch(Exception)

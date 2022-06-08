@@ -24,24 +24,22 @@ namespace Drink.Controllers
 
         // POST api/<LogInController>
         [HttpPost]
-        public async Task<ActionResult<EditUserDTO>> LogIn(LogIn login)
+        public async Task<ActionResult<User>> LogIn(LogIn login)
         {
-            var found = await _context.Users.AnyAsync(x => x.Username == login.Username && x.Password == login.Password);
-            if(found)
+            try
+                {
+                var found = await _context.Users.AnyAsync(x => x.Username == login.Username && x.Password == login.Password);
+                if(found)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(x =>x.Username == login.Username && x.Password == login.Password);
+                    return user;
+                }
+                return Unauthorized();
+                }
+            catch(Exception)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(x =>x.Username == login.Username && x.Password == login.Password);
-                EditUserDTO ret = new();
-                ret.ID = user.Id;
-                ret.Password = user.Password;
-                ret.Username = user.Username;
-                return ret;
-
+                throw;
             }
-            //if (await _context.Users.AnyAsync(x => x.Username == user.Username && x.Password == user.Password))
-            //{
-            //    return user;
-            //}
-            return  Unauthorized();
         }
 
     }

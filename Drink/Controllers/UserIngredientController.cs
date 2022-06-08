@@ -58,19 +58,24 @@ namespace Drink.Controllers
             UserIngredient added = new(userID,user,ingredientID,ingredient);
             await _context.UserIngredients.AddAsync(added);
             user.Ingredients.Add(added);
-            _context.Users.Update(user);
+            //_context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            var myIngredients =  _context.UserIngredients.Where(x => x.UserID == userID).ToList();
-            List < IngredientDTO > resp= new();
+            //RETURNS ALL = REDUNDANT
+            //var myIngredients =  _context.UserIngredients.Where(x => x.UserID == userID).ToList();
+            //List < IngredientDTO > resp= new();
            
-            foreach(UserIngredient item in myIngredients)
-            {
-                var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
-                resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
+            //foreach(UserIngredient item in myIngredients)
+            //{
+            //    var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
+            //    resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
                 
-            }
-            return new UserIngredientDTO(resp);
+            //}
+            //return new UserIngredientDTO(resp);
+
+            //RETURN OK FOR NOW.
+            return Ok();
+
         }
 
         // DELETE api/<UserIngredientController>/5
@@ -86,16 +91,21 @@ namespace Drink.Controllers
                 _context.UserIngredients.Remove(ingredient);
                 await _context.SaveChangesAsync();
             }
-            var myIngredients = _context.UserIngredients.Where(x => x.UserID == userID).ToList();
-            List<IngredientDTO> resp = new();
+            //RETURNS ALL INGREDIENTS = REDUNDANT.
+            //var myIngredients = _context.UserIngredients.Where(x => x.UserID == userID).ToList();
+            //List<IngredientDTO> resp = new();
 
-            foreach (UserIngredient item in myIngredients)
-            {
-                var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
-                resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
+            //foreach (UserIngredient item in myIngredients)
+            //{
+            //    var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
+            //    resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
 
-            }
-            return new UserIngredientDTO(resp);
+            //}
+            //return new UserIngredientDTO(resp);
+ 
+                return NoContent();
+                
+
             }
             catch(Exception)
             {
