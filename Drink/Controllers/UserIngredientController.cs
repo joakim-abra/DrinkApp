@@ -116,8 +116,8 @@ namespace Drink.Controllers
                 
 
             }
-            return new UserIngredientDTO(resp);
+          
 
         }
     }
-}
+
