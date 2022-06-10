@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drink.Migrations
 {
     [DbContext(typeof(CocktailDatabaseContext))]
-    [Migration("20220605133723_initial_migration")]
-    partial class initial_migration
+    [Migration("20220610183030_new-migration")]
+    partial class newmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,10 +27,13 @@ namespace Drink.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CocktailDbID")
+                    b.Property<string>("idDrink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("strDrink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("strDrinkThumb")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");

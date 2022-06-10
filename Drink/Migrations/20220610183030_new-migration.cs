@@ -2,7 +2,7 @@
 
 namespace Drink.Migrations
 {
-    public partial class initial_migration : Migration
+    public partial class newmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +12,9 @@ namespace Drink.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CocktailDbID = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    strDrink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    idDrink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    strDrinkThumb = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

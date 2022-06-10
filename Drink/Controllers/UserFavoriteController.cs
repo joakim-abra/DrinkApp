@@ -24,12 +24,7 @@ namespace Drink.Controllers
         {
             _context = context;
         }
-        // GET: api/<UserFavoriteController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+
 
         // GET api/<UserFavoriteController>/5
         [HttpGet("Favorites")]
@@ -51,7 +46,7 @@ namespace Drink.Controllers
                     var fav = await _context.Favorites.FindAsync(item.FavoriteID);
                     if (item != null)
                     {
-                        resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
+                        resp.Add(new FavoriteDTO(fav.strDrink, fav.idDrink,fav.strDrinkThumb));
                     }
                 }
                 return new UserFavoriteDTO(resp);
@@ -86,27 +81,12 @@ namespace Drink.Controllers
                     return NotFound("Invalid drink id");
                 }
 
-                    Favorite favorite = new(results.Drinks[0].strDrink, results.Drinks[0].idDrink);
+                    Favorite favorite = new(results.Drinks[0].strDrink, results.Drinks[0].idDrink, results.Drinks[0].strDrinkThumb);
                     UserFavorite userFavorite = new(user, favorite);
                     await _context.UserFavorites.AddAsync(userFavorite);
                     await _context.SaveChangesAsync();
 
-                ////Return user's favorites
-                //List<FavoriteDTO> resp = new();
-                //user = await _context.Users.FindAsync(userID);
-                //var favoritesList = await _context.UserFavorites.Where(x => x.UserID == userID).ToListAsync();
 
-                //foreach (UserFavorite item in favoritesList)
-                //{
-                //    var fav = await _context.Favorites.FindAsync(item.FavoriteID);
-                //    if (item != null)
-                //    {
-                //        resp.Add(new FavoriteDTO(fav.Name, fav.CocktailDbID));
-                //    }
-                //}
-                //return new UserFavoriteDTO(resp);
-
-                //Change to Created Response without returning an object how??
                 return Ok();
 
             }
@@ -116,29 +96,13 @@ namespace Drink.Controllers
             }
         }
 
-        //// PUT api/<UserFavoriteController>/5
-        //[HttpPut("AddFavoriteToUser")]
-        //public async Task<ActionResult<User>> AddFavoriteToUser(int userID, Favorite favorite)
-        //{
-        //    User current = await _context.Users.FindAsync(userID);
-        //    if (current == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    UserFavorite userFavorite = new(current,favorite);
-        //    _context.UserFavorites.Add(userFavorite);
-        //    _context.Users.Update(current);
-        //    await _context.SaveChangesAsync();
-        //    return current;
-        //}
-
         // DELETE api/<UserFavoriteController>/5
         [HttpDelete("Delete")]
-        public async Task<ActionResult<UserFavorite>> DeleteFavorite(int userID, FavoriteDTO favorite)
+        public async Task<ActionResult<UserFavorite>> DeleteFavorite(int userID, string idDrink)
         {
             try
             {
-            var userFavorite = await _context.UserFavorites.SingleOrDefaultAsync(x => x.UserID == userID && x.Favorite.CocktailDbID == favorite.CocktailDbID);
+            var userFavorite = await _context.UserFavorites.SingleOrDefaultAsync(x => x.UserID == userID && x.Favorite.idDrink == idDrink);
             _context.UserFavorites.Remove(userFavorite);
             await _context.SaveChangesAsync();
             return NoContent();

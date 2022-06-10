@@ -25,10 +25,13 @@ namespace Drink.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CocktailDbID")
+                    b.Property<string>("idDrink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("strDrink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("strDrinkThumb")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");

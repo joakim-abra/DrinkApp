@@ -8,17 +8,22 @@ namespace Drink.Models
     public class Favorite
     {
         public int ID { get; set; }
-        public string Name { get; set; }
-        public string CocktailDbID { get; set; }
+        // Name
+        public string strDrink { get; set; }
+        //ID in CocktailDB
+        public string idDrink { get; set; }
+        //image link
+        public string strDrinkThumb { get; set; }
 
         public Favorite()
         {
 
         }
-        public Favorite(string name, string cDB)
+        public Favorite(string name, string dbID, string thumb)
         {
-            this.Name = name;
-            this.CocktailDbID = cDB;
+            this.strDrinkThumb = thumb;
+            this.strDrink = name;
+            this.idDrink = dbID;
         }
     }
 }
