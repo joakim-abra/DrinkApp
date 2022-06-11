@@ -96,7 +96,7 @@ namespace Drink.Controllers
         }
 
         // DELETE api/<UserIngredientController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<ActionResult<UserIngredientDTO>> Delete(int userID, int cocktaildbID)
         {
             var ingredient = await _context.UserIngredients.SingleAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
