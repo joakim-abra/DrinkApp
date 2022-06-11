@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drink.Migrations
 {
     [DbContext(typeof(CocktailDatabaseContext))]
-    [Migration("20220610183030_new-migration")]
-    partial class newmigration
+    [Migration("20220610212312_sista_hoppas_jag")]
+    partial class sista_hoppas_jag
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

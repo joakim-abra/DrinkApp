@@ -2,7 +2,7 @@
 
 namespace Drink.Migrations
 {
-    public partial class newmigration : Migration
+    public partial class sista_hoppas_jag : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

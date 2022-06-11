@@ -111,29 +111,25 @@ namespace Drink.Controllers
                 response.EnsureSuccessStatusCode();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Result result = JsonConvert.DeserializeObject<Result>(responseContent);
-               foreach(IngredientDTO ingredient in resp)
+                if(resp.Count<2)
+                {
+                    return result;
+                }
+               for(int i=1;i<resp.Count;i++)
                {
 
-                    string uri = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={ingredient.Name}";
-                    var res = await client.GetAsync(uriID);
+                    string uri = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={resp[i].Name}";
+                    var res = await client.GetAsync(uri);
                     res.EnsureSuccessStatusCode();
-                    string resContent = await response.Content.ReadAsStringAsync();
-                    Result nextSearch = JsonConvert.DeserializeObject<Result>(responseContent);
-                foreach (Drinks item in nextSearch.Drinks)
-                {
-                    if (result.Drinks.Contains(item))
-                    {
-                        result.Drinks.Remove(item);
-                    }
+                    string resContent = await res.Content.ReadAsStringAsync();
+                    Result nextSearch = JsonConvert.DeserializeObject<Result>(resContent);
+                    result.Drinks.RemoveAll(x => !nextSearch.Drinks.Select(y => y.idDrink).Contains(x.idDrink));
                 }
-
-               }
-
                 return result;
             } 
             catch(Exception)
             {
-                return NoContent();
+                throw;
             }
         }
 

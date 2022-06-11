@@ -61,6 +61,11 @@ namespace Drink.Controllers
             {
                 return NotFound();
             }
+            if(await _context.UserIngredients.AnyAsync(x =>x.IngredientID == ingredient.ID && x.UserID == userID))
+            {
+                return Forbid("Cannot add duplicate");
+            }
+
             UserIngredient added = new(userID,user,ingredientID,ingredient);
             await _context.UserIngredients.AddAsync(added);
             user.Ingredients.Add(added);
