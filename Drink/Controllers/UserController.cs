@@ -41,7 +41,6 @@ namespace Drink.Controllers
             }
             return user;
         }
-  
 
         // POST api/<UserController>
         [HttpPost("CreateUser")]
@@ -49,11 +48,11 @@ namespace Drink.Controllers
         {
             if(user.Username == null || user.Username.Length<2)
             {
-                return Unauthorized();
+                return Unauthorized("Username too short");
             }
-            if (user.Password == null || user.Password.Length < 3)
+            if (user.Password == null || user.Password.Length<2)
             {
-                return Unauthorized();
+                return Unauthorized("Password too short");
             }
             try
             {

@@ -59,7 +59,7 @@ namespace Drink.Controllers
 
         // POST api/<UserFavoriteController>
         [HttpPost("AddFavorite")]
-        public async Task<ActionResult<UserFavoriteDTO>> AddFavorite(int userID, int drinkID)
+        public async Task<ActionResult<UserFavoriteDTO>> AddFavorite(int userID, string drinkID)
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={drinkID}";
             try
@@ -70,6 +70,11 @@ namespace Drink.Controllers
             {
                 return NotFound("User not found");
             }
+
+                if (await _context.UserFavorites.AnyAsync(x => x.UserID == userID && x.Favorite.idDrink == drinkID))
+                {
+                    return Unauthorized("Cannot add duplicate");
+                }
 
             var response = await client.GetAsync(uriID);
             response.EnsureSuccessStatusCode();

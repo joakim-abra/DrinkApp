@@ -63,7 +63,7 @@ namespace Drink.Controllers
             }
             if(await _context.UserIngredients.AnyAsync(x =>x.IngredientID == ingredient.ID && x.UserID == userID))
             {
-                return Forbid("Cannot add duplicate");
+                return Unauthorized("Cannot add duplicate");
             }
 
             UserIngredient added = new(userID,user,ingredientID,ingredient);
