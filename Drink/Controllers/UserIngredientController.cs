@@ -21,26 +21,36 @@ namespace Drink.Controllers
         {
             _context = context;
         }
+
+
         // GET: api/<UserIngredientController>
         [HttpGet("GetMyIngredients")]
         public async Task<ActionResult<UserIngredientDTO>> GetMyIngredients(int userID)
         {
-            var user = await _context.Users.FindAsync(userID);
-            if(user!=null)
+            try
             {
 
-            List<IngredientDTO> resp = new();
-            var ingredientList = await _context.UserIngredients.Where(x => x.UserID == userID).ToListAsync();
+                var user = await _context.Users.FindAsync(userID);
+                if(user!=null)
+                {
 
-            foreach (UserIngredient item in ingredientList)
-            {
+                    List<IngredientDTO> resp = new();
+                    var ingredientList = await _context.UserIngredients.Where(x => x.UserID == userID).ToListAsync();
+
+                    foreach (UserIngredient item in ingredientList)
+                    {
                     var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
                     resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
-            }
-            return new UserIngredientDTO(resp);
-            }
+                    }
+                    return new UserIngredientDTO(resp);
+                }
             
-            return NotFound();
+                return NotFound();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
 
         }
 
@@ -55,6 +65,9 @@ namespace Drink.Controllers
         [HttpPost]
         public async Task<ActionResult<UserIngredientDTO>> AddUserIngredient(int userID, int ingredientID)
         {
+            try
+            {
+
             var user = await _context.Users.FindAsync(userID);
             var ingredient = await _context.Ingredients.FindAsync(ingredientID);
             if (user == null || ingredient == null)
@@ -72,20 +85,12 @@ namespace Drink.Controllers
             //_context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            //RETURNS ALL = REDUNDANT
-            //var myIngredients =  _context.UserIngredients.Where(x => x.UserID == userID).ToList();
-            //List < IngredientDTO > resp= new();
-           
-            //foreach(UserIngredient item in myIngredients)
-            //{
-            //    var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
-            //    resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
-                
-            //}
-            //return new UserIngredientDTO(resp);
-
-            //RETURN OK FOR NOW.
-            return Ok();
+            return NoContent();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
 
         }
 
@@ -99,29 +104,24 @@ namespace Drink.Controllers
         [HttpDelete]
         public async Task<ActionResult<UserIngredientDTO>> Delete(int userID, int cocktaildbID)
         {
-            var ingredient = await _context.UserIngredients.SingleAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
-            if(ingredient !=null)
+            try
             {
-                _context.UserIngredients.Remove(ingredient);
-                await _context.SaveChangesAsync();
-            }
-            //RETURNS ALL INGREDIENTS = REDUNDANT.
-            //var myIngredients = _context.UserIngredients.Where(x => x.UserID == userID).ToList();
-            //List<IngredientDTO> resp = new();
+                var ingredient = await _context.UserIngredients.SingleAsync(x => x.UserID == userID && x.Ingredient.CocktailDBId == cocktaildbID);
+                if(ingredient !=null)
+                {
+                    _context.UserIngredients.Remove(ingredient);
+                    await _context.SaveChangesAsync();
+                }
 
-            //foreach (UserIngredient item in myIngredients)
-            //{
-            //    var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
-            //    resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
-
-            //}
-            //return new UserIngredientDTO(resp);
- 
                 return NoContent();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
                 
 
             }
-          
 
         }
     }

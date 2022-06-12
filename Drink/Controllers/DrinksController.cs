@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Drink.Controllers
 {
@@ -32,14 +31,14 @@ namespace Drink.Controllers
         public async Task<ActionResult<Drinks>> GetDrinksByID(int id)
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id}";
-            var response = await client.GetAsync(uriID);
+            
             try
             {
-
-            response.EnsureSuccessStatusCode();
-            string responseContent = await response.Content.ReadAsStringAsync();
-            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
-            return result.Drinks[0];
+                var response = await client.GetAsync(uriID);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+                return result.Drinks[0];
             }
             catch(Exception)
             {
@@ -51,18 +50,18 @@ namespace Drink.Controllers
         public async Task<ActionResult<Result>> GetDrinksByName(string name)
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/search.php?s={name}";
-            var response = await client.GetAsync(uriID);
+            
             try
             {
-
-            response.EnsureSuccessStatusCode();
-            string responseContent = await response.Content.ReadAsStringAsync();
-            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
-            return result;
+                var response = await client.GetAsync(uriID);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+                return result;
             }
             catch(Exception)
             {
-                return NoContent();
+                throw;
             }
         }
 
@@ -70,24 +69,27 @@ namespace Drink.Controllers
         public async Task<ActionResult<Result>> GetDrinksByIngredientName(string name)
         {
             string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={name}";
-            var response = await client.GetAsync(uriID);
+            
             try
             {
-
-            response.EnsureSuccessStatusCode();
-            string responseContent = await response.Content.ReadAsStringAsync();
-            Result result = JsonConvert.DeserializeObject<Result>(responseContent);
-            return result;
+                var response = await client.GetAsync(uriID);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Result result = JsonConvert.DeserializeObject<Result>(responseContent);
+                return result;
             }
             catch(Exception)
             {
-                return NoContent();
+                throw;
             }
         }
 
         [HttpGet("GetDrinksByMyIngredients")]
         public async Task<ActionResult<Result>> GetDrinksByMyIngredients(int userID)
         {
+            try
+            {
+
             var user = await _context.Users.FindAsync(userID);
             if (user == null)
             {
@@ -101,13 +103,11 @@ namespace Drink.Controllers
                     var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);
                     resp.Add(new IngredientDTO(toAdd.Name, toAdd.CocktailDBId));
                 }
-                
+       
           
-            string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={resp[0].Name}";
-            var response = await client.GetAsync(uriID);
-            try
-            {
-
+                string uriID = $"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={resp[0].Name}";
+                var response = await client.GetAsync(uriID);
+        
                 response.EnsureSuccessStatusCode();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Result result = JsonConvert.DeserializeObject<Result>(responseContent);
@@ -137,9 +137,9 @@ namespace Drink.Controllers
         public async Task<ActionResult<Drinks>> GetRandom()
         {
             string uriID = $"http://www.thecocktaildb.com/api/json/v1/1/random.php";
-            var response = await client.GetAsync(uriID);
             try
             {
+                var response = await client.GetAsync(uriID);
                 response.EnsureSuccessStatusCode();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Result randomDrink = JsonConvert.DeserializeObject<Result>(responseContent);
@@ -151,7 +151,7 @@ namespace Drink.Controllers
             }
         }
 
-
+        //TBD
 
         // POST api/<DrinksController>
         [HttpPost]

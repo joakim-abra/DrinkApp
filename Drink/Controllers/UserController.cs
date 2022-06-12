@@ -83,6 +83,15 @@ namespace Drink.Controllers
             {
                 return NotFound();
             }
+            if(await _context.Users.AnyAsync(x =>x.Username == user.Username))
+                {
+                    return Unauthorized("Username already in use");
+                }
+            else if(user.Username.Length<2 || user.Password.Length<2)
+                {
+                    return BadRequest("Username and password must be atleast 2 characters");
+                }
+
             current.Username = user.Username;
             current.Password = user.Password;
             _context.Users.Update(current);

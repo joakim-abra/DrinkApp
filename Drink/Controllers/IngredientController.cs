@@ -32,17 +32,30 @@ namespace Drink.Controllers
         [HttpGet("GetAllIngredients")]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetAllIngredients()
         {
-
-            return await _context.Ingredients.ToListAsync();
+            try
+            {
+                return await _context.Ingredients.ToListAsync();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
 
         [HttpGet("Ingredients/Search")]
         public async Task<ActionResult<IEnumerable<Ingredient>>> SearchIngredientByName(string name)
+        {
+            try
             {
-            var results =  await _context.Ingredients.Where(x => x.Name.Contains(name)).ToListAsync();
-            return results;
+               var results =  await _context.Ingredients.Where(x => x.Name.Contains(name)).ToListAsync();
+               return results;
             }
+            catch(Exception)
+            {
+                throw;
+            }
+        }
 
 
 
@@ -64,15 +77,25 @@ namespace Drink.Controllers
         //[HttpPost("AddIngredient")]
         //public async Task<ActionResult<IEnumerable<Ingredient>>> AddIngredient(Ingredient ingredient)
         //{
-        //    _context.Ingredients.Add(ingredient);
-        //    await _context.SaveChangesAsync();
-        //    return CreatedAtAction("GetAllIngredientsByUserID", new { id = user.Id }, user);
+
         //}
+
+
+
+        //Adds all ingredients from Cocktail database API to database
 
         // POST api/<IngredientController>
         [HttpGet("AddAllIngredients")]
         public async Task<ActionResult<Result>> AddAllIngredientsToDB()
         {
+            try
+            {
+                //Check if ingredients already are added
+                if(await _context.Ingredients.AnyAsync(x =>x.ID>0))
+                {
+                return Unauthorized();
+                }
+
             for(int id=1;id<616;id++)
             {
 
@@ -91,6 +114,11 @@ namespace Drink.Controllers
                 }
             }
             return Ok();
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
 
