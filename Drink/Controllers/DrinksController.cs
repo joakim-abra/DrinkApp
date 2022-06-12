@@ -93,11 +93,17 @@ namespace Drink.Controllers
             var user = await _context.Users.FindAsync(userID);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
+
                 List<IngredientDTO> resp = new();
                 var ingredientList = await _context.UserIngredients.Where(x => x.UserID == userID).ToListAsync();
 
+                if(ingredientList.Count==0)
+                {
+                    return NotFound("Cannot find search items");
+                }
+                  
                 foreach (UserIngredient item in ingredientList)
                 {
                     var toAdd = await _context.Ingredients.FindAsync(item.IngredientID);

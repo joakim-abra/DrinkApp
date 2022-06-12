@@ -92,7 +92,7 @@ namespace Drink.Controllers
                     await _context.SaveChangesAsync();
 
 
-                return Ok();
+                return NoContent();
 
             }
             catch(Exception)
